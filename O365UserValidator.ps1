@@ -20,32 +20,24 @@
 .NOTES
     This function requires the Exchange Online PowerShell module to be installed and the user to have the necessary permissions to connect to Exchange Online.
 #>
-function Get-O365Users {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory=$true)]
-        [ValidateScript({Test-Path $_ -PathType Leaf})]
-        [string]$csvPath,
 
-        [Parameter(Mandatory=$true)]
-        [ValidateScript({Test-Path $_ -PathType Container})]
-        [string]$outputCsvPath
-    )
+# Hardcoded variables
+$csvPath = "C:\temp\input.csv"
+$outputCsvPath = "C:\temp\output.csv"
 
 # Connect to Exchange Online
 try {
-    $credential = Get-Credential
-    Connect-ExchangeOnline -Credential $credential -ShowProgress $true
+        Connect-ExchangeOnline
 } catch {
     Write-Error "Failed to connect to Exchange Online. Please check your credentials."
     return
 }
 
-    # Read the CSV file
-    $users = Import-Csv -Path $csvPath
+# Read the CSV file
+$users = Import-Csv -Path $csvPath
 
-    # Prepare an array to hold the valid users
-    $validUsers = @()
+# Prepare an array to hold the valid users
+$validUsers = @()
 
     # Check each user
     foreach ($user in $users.Recipients) {
@@ -57,7 +49,8 @@ try {
             # Add their details to the array
             $validUser = New-Object PSObject
             $validUser | Add-Member -NotePropertyName Name -NotePropertyValue $o365User.DisplayName
-            # Continue adding other properties...
+            $validUser | Add-Member -NotePropertyName Email -NotePropertyValue $o365User.PrimarySmtpAddress
+            $validUser | Add-Member -NotePropertyName UserPrincipalName -NotePropertyValue $o365User.UserPrincipalName
 
             $validUsers += $validUser
         } catch {
@@ -73,4 +66,3 @@ try {
     Disconnect-ExchangeOnline -Confirm:$false
 
     Write-Output "Process completed. Valid users exported to $outputCsvPath"
-}
