@@ -1,25 +1,25 @@
 <#
 .SYNOPSIS
-    Retrieves and validates Office 365 users based on a CSV file.
+This script validates a list of users against Office 365 and exports the valid users to a CSV file.
 
 .DESCRIPTION
-    The Get-O365Users function connects to Exchange Online, reads a CSV file containing user recipients,
-    and checks each user to see if they exist in Office 365. The function then exports the valid users
-    to a new CSV file.
+The script connects to Exchange Online, reads a CSV file containing a list of user recipients, and checks each user against Office 365. If a user is found, their details (name, email, and user principal name) are added to an array of valid users. The script then exports the valid users to a CSV file and disconnects from Exchange Online.
 
 .PARAMETER csvPath
-    Specifies the path to the input CSV file containing user recipients.
+The path to the input CSV file containing the list of user recipients.
 
 .PARAMETER outputCsvPath
-    Specifies the path to the output CSV file where the valid users will be exported.
+The path to the output CSV file where the valid users will be exported.
 
 .EXAMPLE
-    Get-O365Users -csvPath "C:\Users\John\Documents\users.csv" -outputCsvPath "C:\Users\John\Documents\valid_users.csv"
-    Retrieves and validates Office 365 users based on the "users.csv" file and exports the valid users to "valid_users.csv".
+.\O365UserValidator.ps1 -csvPath "C:\temp\input.csv" -outputCsvPath "C:\temp\output.csv"
+This example runs the script using the specified input CSV file and exports the valid users to the specified output CSV file.
 
 .NOTES
-    This function requires the Exchange Online PowerShell module to be installed and the user to have the necessary permissions to connect to Exchange Online.
+- This script requires the ExchangeOnlineManagement module to be installed.
+- Make sure to provide valid credentials to connect to Exchange Online.
 #>
+
 
 # Hardcoded variables
 $csvPath = "C:\temp\input.csv"
